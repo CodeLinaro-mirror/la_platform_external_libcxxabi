@@ -29604,7 +29604,7 @@ const char* cases[][2] =
     {"PFvRmOE", "void (*)(unsigned long&) &&"},
     {"_ZTW1x", "thread-local wrapper routine for x"},
     {"_ZTHN3fooE", "thread-local initialization routine for foo"},
-    {"_Z4algoIJiiiEEvZ1gEUlDpT_E_", "void algo<int, int, int>(g::'lambda'(int, int, int))"},
+
     // attribute abi_tag
     {"_Z1fB3foov", "f[abi:foo]()"},
     {"_Z1fB3fooB3barv", "f[abi:foo][abi:bar]()"},
@@ -29656,6 +29656,105 @@ const char* cases[][2] =
     {"_ZN5test73fT4IiEEDTcvT_Li1EES1_", "decltype((int)(1)) test7::fT4<int>(int)"},
     {"_ZN5test73fT6INS_1BEEEDTcvT__Li1ELi2EEES2_", "decltype((test7::B)(1, 2)) test7::fT6<test7::B>(test7::B)"},
     {"_ZNK5test81XIiE3barIiEEDTcl3fooIT_EEEv", "decltype(foo<int>()) test8::X<int>::bar<int>() const"},
+
+    // Multiple qualifiers on the same type should all get the same entry in the substitution table.
+    {"_Z1fPU3AS1KiS0_", "f(int const AS1*, int const AS1*)"},
+
+    {"_ZN6test471fINS_1SEEEvPTsNT_1cE", "void test47::f<test47::S>(struct test47::S::c*)"},
+    {"_ZN6test481fINS_1SEEEvPTuNT_1uE", "void test48::f<test48::S>(union test48::S::u*)"},
+    {"_ZN6test451fINS_1SEEEvPTeNT_1eE", "void test45::f<test45::S>(enum test45::S::e*)"},
+
+    // Initializer list expressions
+    {"_ZN5test43tf2INS_1XEEEvDTnw_T_piilLi1EEEE", "void test4::tf2<test4::X>(decltype(new test4::X({1})))"},
+    {"_ZN5test73fA1IiEEDTcmtlNS_1AELi1ELi2EEcvT__EES2_", "decltype((test7::A{1, 2}) , ((int)())) test7::fA1<int>(int)"},
+    {"_ZN5test73fA2IiEEDTcmcvNS_1AEilLi1ELi2EEcvT__EES2_", "decltype(((test7::A)({1, 2})) , ((int)())) test7::fA2<int>(int)"},
+    {"_ZN5test73fB1IiEEDTcmtlNS_1BELi1ELi2EEcvT__EES2_", "decltype((test7::B{1, 2}) , ((int)())) test7::fB1<int>(int)"},
+    {"_ZN5test73fB2IiEEDTcmcvNS_1BEilLi1ELi2EEcvT__EES2_", "decltype(((test7::B)({1, 2})) , ((int)())) test7::fB2<int>(int)"},
+    {"_ZN5test73fC1IiEEDTcmtlNS_1CEilLi1ELi2EEEcvT__EES2_", "decltype((test7::C{{1, 2}}) , ((int)())) test7::fC1<int>(int)"},
+    {"_ZN5test73fC2IiEEDTcmcvNS_1CEilLi1ELi2EEcvT__EES2_", "decltype(((test7::C)({1, 2})) , ((int)())) test7::fC2<int>(int)"},
+    {"_ZN5test73fD1IiEEDTcmtlNS_1DEL_ZNS_1bEEEcvT__EES2_", "decltype((test7::D{test7::b}) , ((int)())) test7::fD1<int>(int)"},
+    {"_ZN5test73fE1IiEEDTcmtlNS_1EELi1ELi2EEcvT__EES2_", "decltype((test7::E{1, 2}) , ((int)())) test7::fE1<int>(int)"},
+    {"_ZN5test73fE2IiEEDTcmcvNS_1EEilLi1ELi2EEcvT__EES2_", "decltype(((test7::E)({1, 2})) , ((int)())) test7::fE2<int>(int)"},
+    {"_ZN5test73fF1IiEEDTcmtlNS_1FEilLi1ELi2EEEcvT__EES2_", "decltype((test7::F{{1, 2}}) , ((int)())) test7::fF1<int>(int)"},
+    {"_ZN5test73fF2IiEEDTcmcvNS_1FEilLi1ELi2EEcvT__EES2_", "decltype(((test7::F)({1, 2})) , ((int)())) test7::fF2<int>(int)"},
+    {"_ZN5test73fT1IiEEDTtlT_EES1_", "decltype(int{}) test7::fT1<int>(int)"},
+    {"_ZN5test73fT3IiEEDTtlT_Li1EEES1_", "decltype(int{1}) test7::fT3<int>(int)"},
+    {"_ZN5test73fT5INS_1BEEEDTtlT_Li1ELi2EEES2_", "decltype(test7::B{1, 2}) test7::fT5<test7::B>(test7::B)"},
+    {"_ZN5test73fT7INS_1AEEEDTtlT_ilEEES2_", "decltype(test7::A{{}}) test7::fT7<test7::A>(test7::A)"},
+    {"_ZN5test73fT8INS_1AEEEDTcvT_ilEES2_", "decltype((test7::A)({})) test7::fT8<test7::A>(test7::A)"},
+    {"_ZN5test73fT9INS_1AEEEDTtlT_ilLi1EEEES2_", "decltype(test7::A{{1}}) test7::fT9<test7::A>(test7::A)"},
+    {"_ZN5test73fTAINS_1AEEEDTcvT_ilLi1EEES2_", "decltype((test7::A)({1})) test7::fTA<test7::A>(test7::A)"},
+    {"_ZN5test73fTBINS_1CEEEDTtlT_ilLi1ELi2EEEES2_", "decltype(test7::C{{1, 2}}) test7::fTB<test7::C>(test7::C)"},
+    {"_ZN5test73fTCINS_1CEEEDTcvT_ilLi1ELi2EEES2_", "decltype((test7::C)({1, 2})) test7::fTC<test7::C>(test7::C)"},
+
+    // Designated init expressions
+    {"_ZN15designated_init1fINS_1AEEEvDTtlT_di1adi1bdxLi3EdXLi1ELi4ELi9EEE", "void designated_init::f<designated_init::A>(decltype(designated_init::A{.a.b[3][1 ... 4] = 9}))"},
+    {"_Z1fIXtl1Xdi1adi1bdxLi3ELi1EEEE", "f<X{.a.b[3] = 1}>"},
+
+    // Inheriting constructors:
+    {"_ZN1BCI21AEi", "B::B(int)"},
+    {"_ZN1DCI21CIiEET_", "D::D(int)"},
+
+    // Exception specifiers:
+    {"_Z1bPDoFivE", "b(int (*)() noexcept)"},
+    {"_Z1fILb0EEvPDOT_EFivE", "void f<false>(int (*)() noexcept(false))"},
+    {"_Z1fILb1EEvPDOT_EFivE", "void f<true>(int (*)() noexcept(true))"},
+    {"_Z1gIJEEvPDwDpT_EFivE", "void g<>(int (*)() throw())"},
+    {"_Z1gIJfEEvPDwDpT_EFivE", "void g<float>(int (*)() throw(float))"},
+    {"_Z1hIJEEPDwDpT_iEFivEPDwiS1_EFivE", "int (*h<>(int (*)() throw(int)))() throw(int)"},
+    {"_Z1hIJfEEPDwDpT_iEFivEPDwiS1_EFivE", "int (*h<float>(int (*)() throw(int, float)))() throw(float, int)"},
+    {"_Z1iIJEEPDwiDpT_EFivEPS2_", "int (*i<>(int (*)() throw(int)))() throw(int)"},
+    {"_Z1iIJEEPDwiDpT_EFivES3_", "int (*i<>(int (*)() throw(int)))() throw(int)"},
+    {"_Z1iIJfEEPDwiDpT_EFivEPS2_", "int (*i<float>(int (*)() throw(int, float)))() throw(int, float)"},
+    {"_Z1iIJfEEPDwiDpT_EFivES3_", "int (*i<float>(int (*)() throw(int, float)))() throw(int, float)"},
+    {"_Z1pILb1EEiM1SKDOT_EFivRE", "int p<true>(int (S::*)() const & noexcept(true))"},
+    {"_Z1pIJicfEEiM1SVKDwDpT_EFivOE", "int p<int, char, float>(int (S::*)() const volatile && throw(int, char, float))"},
+    {"_Z1pM1SDoFivE", "p(int (S::*)() noexcept)"},
+
+    {"_ZNKR4llvm8OptionalINS_11MCFixupKindEEdeEv", "llvm::Optional<llvm::MCFixupKind>::operator*() const &"},
+    {"_ZZL23isValidCoroutineContextRN5clang4SemaENS_14SourceLocationEN4llvm9StringRefEENK3$_4clEZL23isValidCoroutineContextS1_S2_S4_E15InvalidFuncDiag", "isValidCoroutineContext(clang::Sema&, clang::SourceLocation, llvm::StringRef)::$_4::operator()(isValidCoroutineContext(clang::Sema&, clang::SourceLocation, llvm::StringRef)::InvalidFuncDiag) const"},
+
+    // ABI tags can apply to built-in substitutions.
+    {"_Z1fSsB1XS_", "f(std::string[abi:X], std::string[abi:X])"},
+
+    {"___Z10blocksNRVOv_block_invoke", "invocation function for block in blocksNRVO()"},
+
+    // Structured bindings:
+    {"_ZDC2a12a2E", "[a1, a2]"},
+    {"_ZN2NSDC1x1yEE", "NS::[x, y]"},
+
+    {"_ZGRDC1x1yE_", "reference temporary for [x, y]"},
+    {"_ZGR1bIvE2_", "reference temporary for b<void>"},
+
+    {"_ZZ18test_assign_throwsI20small_throws_on_copyLb0EEvvENKUlRNSt3__13anyEOT_E_clIRS0_EEDaS3_S5_", "auto void test_assign_throws<small_throws_on_copy, false>()::'lambda'(std::__1::any&, auto&&)::operator()<small_throws_on_copy&>(std::__1::any&, auto&&) const"},
+
+    // enable_if attributes:
+    {"_Z1fUa9enable_ifIXLi1EEEv", "f() [enable_if:1]"},
+    {"_ZN5test4IdE1fEUa9enable_ifIXeqfL0p_Li1EEXeqfL0p0_Li2EEEi", "test4<double>::f(int) [enable_if:(fp) == (1), (fp0) == (2)]"},
+    {"_Z3quxUa9enable_ifIXLi1EEXL_Z9TRUEFACTSEEEi", "qux(int) [enable_if:1, TRUEFACTS]"},
+
+    // Conversion operators:
+    {"_ZN5OuterI4MarpEcv7MuncherIJT_T0_DpT1_EEI4MerpS0_JicfEEEv", "Outer<Marp>::operator Muncher<Merp, Marp, int, char, float><Merp, Marp, int, char, float>()"},
+    {"_ZN5OuterI4MarpEcvT_I4MerpEEv", "Outer<Marp>::operator Merp<Merp>()"},
+    {"_ZZN5OuterI4MarpEcv7MuncherIJT_T0_DpT1_EEI4MerpS0_JicfEEEvEN1ScvS9_Ev", "Outer<Marp>::operator Muncher<Merp, Marp, int, char, float><Merp, Marp, int, char, float>()::S::operator Merp()"},
+    {"_ZN1Scv7MuncherIJDpPT_EEIJFivEA_iEEEv", "S::operator Muncher<int (*)(), int (*) []><int (), int []>()"},
+
+    {"_Z2f8IiJ8identityIiES0_IfEEEvRAsPiDpT0_T_DpNS3_4typeEE_i", "void f8<int, identity<int>, identity<float> >(int (&) [sizeof... (int, identity<int>, identity<float>, int, identity<int>::type, identity<float>::type)])"},
+
+    {"_ZNK13StaticMembersIfE1xMUlvE_clEv", "StaticMembers<float>::x::'lambda'()::operator()() const"},
+    {"_ZNK10inline_varMUlvE_clEv", "inline_var::'lambda'()::operator()() const"},
+    // C++1z fold expressions:
+    {"_Z6foldl1IJLi1ELi2ELi3EEEv1AIXfLplLi1ET_EE", "void foldl1<1, 2, 3>(A<(1 + ... + (1, 2, 3))>)"},
+    {"_Z6foldr1IJLi1ELi2ELi3EEEv1AIXfRplT_Li1EEE", "void foldr1<1, 2, 3>(A<((1, 2, 3) + ... + 1)>)"},
+    {"_Z5foldlIJLi1ELi2ELi3EEEv1AIXflplT_EE", "void foldl<1, 2, 3>(A<(... + (1, 2, 3))>)"},
+    {"_Z5foldrIJLi1ELi2ELi3EEEv1AIXfrplT_EE", "void foldr<1, 2, 3>(A<((1, 2, 3) + ...)>)"},
+    {"_ZN7PartialIJLi1ELi2EEE5foldrIJLi3ELi4EEEEv1AIXplLi1EplLi2EfRplT_plLi1EplLi2EfrplT_EE", "void Partial<1, 2>::foldr<3, 4>(A<(1) + ((2) + (((3, 4) + ... + (1) + ((2) + (((3, 4) + ...))))))>)"},
+
+    // reference collapsing:
+    {"_Z1fIR1SEiOT_", "int f<S&>(S&)"},
+    {"_Z1fIJR1SS0_EEiDpOT_", "int f<S&, S>(S&, S&&)"},
+
+    {"___Z3foo_block_invoke.25", "invocation function for block in foo"},
 };
 
 const unsigned N = sizeof(cases) / sizeof(cases[0]);
@@ -29727,7 +29826,6 @@ const char* invalid_cases[] =
     "AT__ZSiIJEEAnwscT_T__",
     "FSiIJEENT_IoE ",
     "ZTVSiIZTVSiIZTVSiIZTVSiINIJEET_T_T_T_T_ ",
-    "_ZSiIJEvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvttvvvvvvET_v",
     "Ana_T_E_T_IJEffffffffffffffersfffffrsrsffffffbgE",
 };
 
@@ -29737,22 +29835,25 @@ void test()
 {
     std::size_t len = 0;
     char* buf = nullptr;
+    bool failed = false;
     for (unsigned i = 0; i < N; ++i)
     {
         int status;
         char* demang = __cxxabiv1::__cxa_demangle(cases[i][0], buf, &len, &status);
         if (demang == 0 || std::strcmp(demang, cases[i][1]) != 0)
         {
-            std::cout << cases[i][0] << " -> " << cases[i][1] << '\n';
+            std::cout << "ERROR demangling " << cases[i][0] << '\n'
+                      << "expected: " << cases[i][1] << std::endl;
             if (demang)
             {
-                std::cout << "Got instead: " << demang << '\n';
-                assert(std::strcmp(demang, cases[i][1]) == 0);
+                std::cout << " reality: " << demang << '\n' << std::endl;
+                buf = demang;
+                failed = true;
             }
             else
             {
                 std::cout << "Got instead: NULL, " << status << '\n';
-                assert(demang != 0);
+                failed = true;
             }
         }
         else
@@ -29760,6 +29861,7 @@ void test()
             buf = demang;
         }
     }
+    assert(!failed);
     free(buf);
 }
 
@@ -29785,39 +29887,10 @@ void test_invalid_cases()
 }
 
 const char *xfail_cases[] = {
-    "_Z1fUa9enable_ifIXLi1EEEv", // enable_if attribute
-    "_ZDC2a12a2E", // decomposition decl
     "_ZW6FooBarE2f3v", // C++ modules TS
 
     // FIXME: Why does clang generate the "cp" expr?
     "_ZN5test11bIsEEDTcp3foocvT__EEES1_",
-
-    // Initializer list expressions:
-    "_ZN5test43tf2INS_1XEEEvDTnw_T_piilLi1EEEE",
-    "_ZN5test43tf3INS_1XEEEvDTnw_T_ilLi1EEE",
-    "_ZN5test73fA1IiEEDTcmtlNS_1AELi1ELi2EEcvT__EES2_",
-    "_ZN5test73fA2IiEEDTcmcvNS_1AEilLi1ELi2EEcvT__EES2_",
-    "_ZN5test73fB1IiEEDTcmtlNS_1BELi1ELi2EEcvT__EES2_",
-    "_ZN5test73fB2IiEEDTcmcvNS_1BEilLi1ELi2EEcvT__EES2_",
-    "_ZN5test73fC1IiEEDTcmtlNS_1CEilLi1ELi2EEEcvT__EES2_",
-    "_ZN5test73fC2IiEEDTcmcvNS_1CEilLi1ELi2EEcvT__EES2_",
-    "_ZN5test73fD1IiEEDTcmtlNS_1DEL_ZNS_1bEEEcvT__EES2_",
-    "_ZN5test73fE1IiEEDTcmtlNS_1EELi1ELi2EEcvT__EES2_",
-    "_ZN5test73fE2IiEEDTcmcvNS_1EEilLi1ELi2EEcvT__EES2_",
-    "_ZN5test73fF1IiEEDTcmtlNS_1FEilLi1ELi2EEEcvT__EES2_",
-    "_ZN5test73fF2IiEEDTcmcvNS_1FEilLi1ELi2EEcvT__EES2_",
-    "_ZN5test73fT1IiEEDTtlT_EES1_",
-    "_ZN5test73fT3IiEEDTtlT_Li1EEES1_",
-    "_ZN5test73fT5INS_1BEEEDTtlT_Li1ELi2EEES2_",
-    "_ZN5test73fT7INS_1AEEEDTtlT_ilEEES2_",
-    "_ZN5test73fT8INS_1AEEEDTcvT_ilEES2_",
-    "_ZN5test73fT9INS_1AEEEDTtlT_ilLi1EEEES2_",
-    "_ZN5test73fTAINS_1AEEEDTcvT_ilLi1EEES2_",
-    "_ZN5test73fTBINS_1CEEEDTtlT_ilLi1ELi2EEEES2_",
-    "_ZN5test73fTCINS_1CEEEDTcvT_ilLi1ELi2EEES2_",
-
-    // Designated init expressions
-    "_ZN15designated_init1fINS_1AEEEvDTtlT_di1adi1bdxLi3EdXLi1ELi4ELi9EEE",
 };
 
 const size_t num_xfails = sizeof(xfail_cases) / sizeof(xfail_cases[0]);
